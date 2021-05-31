@@ -1,0 +1,36 @@
+sudo: required
+language: generic
+services:
+  - docker
+
+before_install:
+  - docker build -t clevins/docker-fib-project -f ./client/Dockerfile.dev .
+
+script:
+  - docker run -e CI=true clevins/docker-fib-project npm run test
+
+after_success:
+  - build build -t clevins/fib-project-client ./client
+  - build build -t clevins/fib-project-nginx ./nginx
+  - build build -t clevins/fib-project-server ./server
+  - build build -t clevins/fib-project-worker ./worker
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  - docker push clevins/fib-project-client
+  - docker push clevins/fib-project-nginx
+  - docker push clevins/fib-project-server
+  - docker push clevins/fib-project-worker
+
+
+# deploy:
+#   provider: elasticbeanstalk
+#   region: "eu-west-1"
+#   app: "docker-react"
+#   env: "Dockerreact-env"
+#   bucket_name: "elasticbeanstalk-eu-west-1-800939509044"
+#   bucket_path: "docker-react"
+#   on:
+#     branch: master
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
