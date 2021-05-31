@@ -10,10 +10,10 @@ script:
   - docker run -e CI=true clevins/docker-fib-project npm run test
 
 after_success:
-  - build build -t clevins/fib-project-client ./client
-  - build build -t clevins/fib-project-nginx ./nginx
-  - build build -t clevins/fib-project-server ./server
-  - build build -t clevins/fib-project-worker ./worker
+  - docker build -t clevins/fib-project-client ./client
+  - docker build -t clevins/fib-project-nginx ./nginx
+  - docker build -t clevins/fib-project-server ./server
+  - docker build -t clevins/fib-project-worker ./worker
 
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
